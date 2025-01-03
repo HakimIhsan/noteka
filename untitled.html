@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TXDC Note Keeper</title>
+
+    <style>
+        /* Base styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+        }
+
+        header {
+            width: 100%;
+            background-color: #4169E1;
+            color: white;
+            text-align: center;
+            padding: 40px 0;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-top: 20px;
+            position: relative;
+        }
+        .color-picker-container {
+            margin-top: 5px;
+            display: flex;
+            justify-content: center; /* Align color options to the left */
+        }
+
+        .color-option {
+            width: 10px;
+            height: 10px;
+            display: inline-block;
+            border-radius: 50%;
+            margin: 0 5px;
+            cursor: pointer;
+
+        }
+
+        .spark-bar-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #e6f0ff;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+
+        .spark-bar {
+            font-size: 16px;
+            font-style: italic;
+            text-align: left;
+            color: #4169E1;
+            flex: 1;
+            margin-right: 10px;
+        }
+
+        .spark-button {
+            padding: 8px 12px;
+            font-size: 14px;
+            border-radius: 4px;
+            background-color: #4169E1;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .spark-button:hover {
+            background-color: #3659b8;
+        }
+
+        .slides-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .slide {
+            display: none;
+            width: 100%;
+            max-width: 350px;
+            aspect-ratio: 1 / 1;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 15px;
+            font-size: 16px;
+            background-color: white;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        .slide-controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .slide-controls button {
+            background-color: #4169E1;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .slide-controls button:hover {
+            background-color: #3659b8;
+            transform: scale(1.05);
+        }
+
+        .features {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .features button {
+            background-color: #4169E1;
+            color: white;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .features button:hover {
+            background-color: #3659b8;
+            transform: scale(1.05);
+        }
+
+        footer {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #777;
+        }
+
+        .slide-number {
+            font-size: 12px;
+            color: #4169E1;
+            font-weight: bold;
+            margin: 10px 0;
+            text-align: center;
+        }
+
+        .slideshow-mode {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .slideshow-mode .slide {
+            display: none;
+            width: 90vw;
+            height: 90vh;
+            max-width: 90vh;
+            max-height: 90vw;
+            aspect-ratio: 1 / 1;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .slideshow-mode .slide.active {
+            display: block;
+        }
+        /* Responsive Styles for Mobile */
+    @media only screen and (max-width: 600px) {
+        header {
+            padding: 20px 0;
+            font-size: 1.2em;
+        }
+
+        .container {
+            max-width: 90%;
+            padding: 15px;
+            margin-top: 10px;
+        }
+
+        .spark-bar {
+            font-size: 14px;
+        }
+
+        .spark-button {
+            font-size: 12px;
+            padding: 6px 10px;
+        }
+
+        .slide {
+            max-width: 300px;
+            font-size: 14px;
+            padding: 10px;
+        }
+
+        .slide-controls button {
+            font-size: 14px;
+            padding: 8px 15px;
+        }
+
+        .features button {
+            font-size: 12px;
+            padding: 10px 15px;
+        }
+
+        footer {
+            font-size: 12px;
+        }
+    }
+    </style>
+</head>
+<body>
+
+
+    <div class="container">
+        <div class="spark-bar-container">
+            <div class="spark-bar" id="sparkBar" contenteditable="true">Loading inspiration...</div>
+            <button class="spark-button" onclick="updateSpark()">Spark Me ⚡</button>
+        </div>
+
+        <div class="slides-container" id="slidesContainer">
+            <div class="slide active" contenteditable="true">Write your thoughts here...</div>
+        </div>
+
+        <div class="color-picker-container">
+            <div class="color-option" style="background-color: #FFFFFF; border: 1px solid black;" onclick="changeCanvasBackground('#FFFFFF')"></div>
+            <div class="color-option" style="background-color: #FAF9F6; border: 1px solid black;" onclick="changeCanvasBackground('#FAF9F6')"></div>
+            <div class="color-option" style="background-color: #F0F0F0; border: 1px solid black;" onclick="changeCanvasBackground('#F0F0F0')"></div>
+            <div class="color-option" style="background-color: #D8F0E0; border: 1px solid black;" onclick="changeCanvasBackground('#D8F0E0')"></div>
+            <div class="color-option" style="background-color: #FFDAB9; border: 1px solid black;" onclick="changeCanvasBackground('#FFDAB9')"></div>
+            <div class="color-option" style="background-color: #E6D9F7; border: 1px solid black;" onclick="changeCanvasBackground('#E6D9F7')"></div>
+        </div>
+
+        <div class="slide-number" id="slideNumber">Slide 1/1</div>
+        <div class="slide-controls">
+            <button onclick="prevSlide()">Previous</button>
+            <button onclick="nextSlide()">Next</button>
+            <button onclick="addSlide()">Add Slide</button>
+        </div>
+
+        <div class="features">
+            <button onclick="watchAsReels()">🎥 Slideshow</button>
+            <button onclick="exportAsImage()">📸 Export Slide as Image</button>
+            <button onclick="saveAsText()">💾 Save All as TXT</button>
+        </div>
+    </div>
+
+    <footer>
+        <p>Noteka - Make Everyone Writes.</p>
+    </footer>
+    <!-- Include HTML2Canvas Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+        // Apply style (bold, italic, underline) to selected text
+        function applyStyle(style) {
+            if (style === 'bold') {
+                document.execCommand('bold');
+            } else if (style === 'italic') {
+                document.execCommand('italic');
+            } else if (style === 'underline') {
+                document.execCommand('underline');
+            }
+        }
+
+        // Color Change
+        function changeCanvasBackground(color) {
+            const canvases = document.querySelectorAll('.slide'); // Select all canvas elements with the class "slide"
+            canvases.forEach((canvas) => {
+                canvas.style.backgroundColor = color; // Change background color for each canvas
+            });
+            localStorage.setItem('canvasBgColor', color); // Save the selected color to localStorage
+        }
+
+        // On page load, apply the saved canvas background color if available
+        window.onload = () => {
+            const savedColor = localStorage.getItem('canvasBgColor');
+            if (savedColor) {
+                document.querySelector('.canvas').style.backgroundColor = savedColor;
+            }
+        };
+
+        // Spark Me Bar
+    const sparkBar = document.getElementById('sparkBar');
+    const sparks = [
+        "Write something here to hang your mind, or click -> ",  
+"Write a declaration for who you refuse to become.", "Describe the most exhilarating day you can imagine living.", "What struggle would you never trade away?", "List what you’d fight hardest to keep if it were threatened.", "What single move could disrupt your entire routine today?", "What’s the rawest truth behind your last genuine laugh?", "If you had an hour to defy all rules, what would you do?",  
+"What’s the one idea you’re most afraid to put into words?",  
+"If your writing had to convince someone to change their life in one sentence, what would it say?",  
+"What question would make even you uncomfortable to answer honestly?",  
+"Who would disagree most strongly with your point of view? Write their argument.",  
+"What is missing in the world that only your writing can provide?",  
+"If your words were immortal, how would you want them to be remembered?",  
+"What contradiction in your beliefs is begging to be explored?",  
+"Which part of your draft feels safe? Tear it apart and go deeper.",  
+"Imagine the worst critique someone could give your writing—how would you respond?",  
+"What’s the most daring metaphor you can think of to explain your main idea?",  
+"If you had to write your conclusion first, what would it be?",  
+"What would your antagonist say about your writing topic?",  
+"How does your personal bias shape what you’re about to write?",  
+"If you had only one paragraph to make your point, what would it be?",  
+"What’s the most unconventional way to start your piece? Write it.",  
+"Who is your audience? Now, who shouldn’t be your audience?",  
+"What truth are you avoiding in your writing?",  
+"If your topic were a crime, how would you defend it in court?",  
+"What does your topic sound like in one sentence? What does it feel like?",  
+"What’s one bold claim you’re willing to fight for?",  
+"What emotional response are you trying to evoke in your reader?",  
+"Which part of your argument feels weakest, and why?",  
+"What’s the core conflict in your writing—external, internal, or both?",  
+"Imagine your topic as a puzzle—what’s the piece you’re missing?",  
+"What’s your gut reaction to this topic, and how does it differ from your logical response?",  
+"What’s a common assumption about your topic that you disagree with?",  
+"What’s your most surprising discovery about this subject?",  
+"How would this piece change if you wrote it as a story?",  
+"What would a child’s version of your argument sound like?",  
+"What’s the one question your readers will ask after finishing this piece?",  
+"If this were your last piece of writing, what would you say?",  
+"Who would be most offended by your writing? Does that matter?",  
+"What’s the elephant in the room about your topic that you haven’t addressed?",  
+"How does your argument sound to someone who fundamentally disagrees with you?",  
+"What’s the most outrageous claim you can make? Can you defend it?",  
+"If you could only keep one sentence from your draft, which would it be?",  
+"What part of your argument would you debate yourself on?",  
+"What does your topic reveal about your own values?",  
+"If you stripped your draft of adjectives and adverbs, what would remain?",  
+"How would this idea look in a completely different genre?",  
+
+    ];
+    let sparkIndex = 0;
+
+    function updateSpark() {
+        const randomIndex = Math.floor(Math.random() * sparks.length);
+        sparkBar.textContent = sparks[randomIndex];
+    }
+
+    // Initial Spark
+    updateSpark();
+
+        // Slides management
+        const slidesContainer = document.getElementById('slidesContainer');
+        const slideNumber = document.getElementById('slideNumber');
+        let currentSlideIndex = 0;
+
+        function addSlide() {
+            const newSlide = document.createElement('div');
+            newSlide.className = 'slide';
+            newSlide.contentEditable = true;
+            newSlide.textContent = 'New slide...';
+            slidesContainer.appendChild(newSlide);
+
+            // Apply saved background color to the new slide
+            const savedColor = localStorage.getItem('canvasBgColor');
+            if (savedColor) {
+                newSlide.style.backgroundColor = savedColor;
+            }
+            
+            switchSlide(slidesContainer.children.length - 1);
+        }
+
+        function switchSlide(index) {
+            const slides = document.querySelectorAll('.slide');
+            slides.forEach((slide, i) => slide.classList.toggle('active', i === index));
+            currentSlideIndex = index;
+            updateSlideNumber();
+        }
+
+        function prevSlide() {
+            if (currentSlideIndex > 0) switchSlide(currentSlideIndex - 1);
+        }
+
+        function nextSlide() {
+            if (currentSlideIndex < slidesContainer.children.length - 1) switchSlide(currentSlideIndex + 1);
+        }
+
+        function updateSlideNumber() {
+            slideNumber.textContent = `Slide ${currentSlideIndex + 1}/${slidesContainer.children.length}`;
+        }
+
+        // Feature: Watch Notes as Reels (Placeholder)
+        let isSlideshowMode = false;
+
+function watchAsReels() {
+    const slidesContainer = document.querySelector('.slides-container');
+    slidesContainer.classList.add('slideshow-mode');
+    isSlideshowMode = true;
+    switchSlide(currentSlideIndex); // Ensure the current slide is displayed
+}
+
+function stopSlideshow() {
+    const slidesContainer = document.querySelector('.slides-container');
+    slidesContainer.classList.remove('slideshow-mode');
+    isSlideshowMode = false;
+}
+
+document.addEventListener('keydown', (e) => {
+    if (!isSlideshowMode) return;
+
+    if (e.key === 'ArrowRight') {
+        nextSlide();
+    } else if (e.key === 'ArrowLeft') {
+        prevSlide();
+    } else if (e.key === 'Escape') {
+        stopSlideshow();
+    }
+});
+
+function saveAsText() {
+    const slides = document.querySelectorAll('.slide');
+    let content = '';
+
+    slides.forEach((slide, index) => {
+        content += `Slide ${index + 1} :\n${slide.textContent.trim()}\n\n`;
+    });
+
+    const blob = new Blob([content], { type: 'text/plain' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'note-KA.txt';
+    link.click();
+}
+
+function switchSlide(index) {
+    const slides = document.querySelectorAll('.slide');
+    slides.forEach((slide, i) => slide.classList.toggle('active', i === index));
+    currentSlideIndex = index;
+    updateSlideNumber();
+}
+
+
+
+        // Feature: Export as Image
+        function exportAsImage() {
+            const activeSlide = document.querySelector('.slide.active');
+            if (!activeSlide || !activeSlide.textContent.trim()) {
+                alert("Write something in the active slide before exporting!");
+                return;
+            }
+
+            // Use html2canvas to take a screenshot of the active slide
+            html2canvas(activeSlide, {
+                scale: 3, // Higher scale for HD quality
+                backgroundColor: null, // Preserve transparency
+            }).then((canvas) => {
+                const link = document.createElement('a');
+                link.download = 'note-KA.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            }).catch((error) => {
+                console.error("Error exporting as image:", error);
+            });
+        }
+    </script>
+</body>
+</html>
